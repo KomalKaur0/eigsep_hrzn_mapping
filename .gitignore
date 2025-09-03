@@ -1,0 +1,6 @@
+# cache files
+aaron_notebooks/marjum_dem.npz
+notebooks/marjum_dem.npz
+
+# DS_Store
+.DS_Store
