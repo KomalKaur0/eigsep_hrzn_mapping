@@ -2,7 +2,7 @@ import numpy as np
 from eigsep_terrain.marjum_dem import MarjumDEM as DEM
 
 class Image:
-    def __init__(self, pathname, label, lat, lon, alt, heading=None, 
+    def __init__(self, pathname, label, lat, lon, alt, roll, heading=None, 
                  angle_up=None, hor_weight=None, ver_weight=None, dis_weight=None) -> None:
         '''
         constructor for image class
@@ -19,6 +19,8 @@ class Image:
             longitude the photo was taken at
         alt : float
             altitude the photo was taken at [m]
+        roll : float
+            degrees
         heading : float, optional
             degrees from north the camera was facing
             north as 0° (or 360°), east as 90°, south as 180°, and west as 270°
@@ -48,6 +50,7 @@ class Image:
         self.ver_weight = ver_weight
         self.hor_weight = hor_weight
         self.dis_weight = dis_weight
+        self.roll = roll
 
     def check_valid_position(self, lat=None, lon=None, alt=None) -> bool:
         '''
