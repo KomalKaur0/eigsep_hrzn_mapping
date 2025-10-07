@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib.image import imread
 import cv2
 from utils import rot_m
-from ray import ray_trace_basic
+from ray_pkg import ray_trace_basic
 from transformers import pipeline
 import torch
 import pymc as pm
