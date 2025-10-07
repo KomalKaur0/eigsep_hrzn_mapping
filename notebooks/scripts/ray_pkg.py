@@ -3,7 +3,7 @@ import healpy
 import jax
 import jax.numpy as jnp
 from jax import lax
-from utils import distance
+from .utils import distance
 
 dtype_r = np.float32
 dtype_i = np.int32

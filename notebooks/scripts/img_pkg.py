@@ -2,13 +2,32 @@ import os
 import numpy as np
 from matplotlib.image import imread
 import cv2
-from utils import rot_m
-from ray_pkg import ray_trace_basic
+# from utils import rot_m
+from .ray_pkg import ray_trace_basic
 from transformers import pipeline
 import torch
 import pymc as pm
 
 PRM_ORDER = ('e', 'n', 'u', 'th', 'ph', 'ti', 'f')
+
+def rot_m(ang, vec):
+    """Return 3x3 matrix defined by rotation by 'ang' around the
+    axis 'vec', according to the right-hand rule.  Both can be vectors,
+    returning a vector of rotation matrices.  Rotation matrix will have a
+    scaling of |vec| (i.e. normalize |vec|=1 for a pure rotation)."""
+    c = np.cos(ang); s = np.sin(ang); C = 1-c 
+    x,y,z = vec[...,0], vec[...,1], vec[...,2]
+    xs,ys,zs = x*s, y*s, z*s 
+    xC,yC,zC = x*C, y*C, z*C 
+    xyC,yzC,zxC = x*yC, y*zC, z*xC
+    rm = np.array([[x*xC+c, xyC-zs, zxC+ys],
+                   [xyC+zs, y*yC+c, yzC-xs],
+                   [zxC-ys, yzC+xs, z*zC+c]], dtype=np.double)
+    if rm.ndim > 2:
+        axes = list(range(rm.ndim))
+        return rm.transpose(axes[-1:] + axes[:-1])
+    else:
+        return rm
 
 def pixels_to_rays(Nu, Nv, f, uv=None, dtype=np.float32):
     if uv is None:
@@ -190,15 +209,14 @@ class PositionSolver:
 
     def total_loss(self, theta):
         self.set_mcmc_prms(theta)
-
         L = 0.0
         for cnt, img in enumerate(self.fit_imgs):
             L += img.horizon_ray_loss(self.dem, cnt=self.n_rays)
-        L = np.array(L / len(self.fit_imgs), dtype=np.float32)
+        L = np.array(L / (len(self.fit_imgs) + self.eps), dtype=np.float32)
         logp = len(self.fit_imgs) * self.n_rays * (1 - L) * np.log(1.0 - self.eps) + len(self.fit_imgs) * self.n_rays * L * np.log(self.eps)
         for img in self.imgs:
             logL = img.ant_loss(self.ant_pos, self.box_size)
-            print('logp', logp.eval())
+            print('logp', logp)
             print('logL', logL)
             logp += logL
         return logp
