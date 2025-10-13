@@ -179,7 +179,6 @@ class HorizonImage:
 class PositionSolver:
     def __init__(self, ant_pos_prior, fit_imgs, static_imgs, n_rays, dem, eps=0.01, ant_pos_err=20, box_size=0.3):
         self.fit_imgs = fit_imgs
-        self.static_imgs = static_imgs
         self.ant_pos_prior = ant_pos_prior
         self.ant_pos_err = ant_pos_err
         self.imgs = fit_imgs + static_imgs
